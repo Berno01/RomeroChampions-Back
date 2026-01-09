@@ -1,0 +1,26 @@
+package com.sistemasTarija.romeroChampions.venta.infrastructure.adapter.out.persistence.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class InventarioRawDTO {
+    // Datos del Modelo
+    private Integer idModelo;
+    private String nombreModelo;
+    private Double precio;
+    private String nombreMarca;
+    private String nombreCategoria;
+    private String nombreEstilo;
+
+    // Datos de la Variante Visual (Color)
+    private String nombreColor;
+    private String codigoHex;
+    private String fotoUrl;
+
+    // Datos de Inventario (Talla y Stock)
+    private Integer idVariante;
+    private String nombreTalla;
+    private Integer stock;
+}

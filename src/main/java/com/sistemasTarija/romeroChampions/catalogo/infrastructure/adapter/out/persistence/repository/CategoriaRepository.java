@@ -1,0 +1,14 @@
+package com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.repository;
+
+import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.options.CategoriaCatalogoEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface CategoriaRepository extends JpaRepository<CategoriaCatalogoEntity, Integer> {
+    Optional<CategoriaCatalogoEntity> findByNombre(String nombre);
+    List<CategoriaCatalogoEntity> findByEstadoTrue();
+}
