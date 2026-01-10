@@ -24,7 +24,7 @@ public class PagoCreditoEntity {
     @Column(name = "id_venta")
     private Integer idVenta;
 
-    @Column(name = "monto_pago")
+    @Column(name = "monto")
     private Double montoPago;
 
     @Column(name = "fecha_pago")

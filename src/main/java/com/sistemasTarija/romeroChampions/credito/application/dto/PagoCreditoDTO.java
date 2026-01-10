@@ -25,4 +25,12 @@ public class PagoCreditoDTO {
     private Boolean estado;
     @JsonProperty("id_usuario")
     private Integer idUsuario; 
+    
+    // Campos informativos
+    @JsonProperty("nombre_cliente")
+    private String nombreCliente;
+    @JsonProperty("nombre_sucursal")
+    private String nombreSucursal;
+    @JsonProperty("saldo_actual_venta")
+    private Double saldoVentaActual;
 }

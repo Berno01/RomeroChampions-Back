@@ -24,6 +24,11 @@ public class PagoCredito {
     private Integer updatedBy;
     private LocalDateTime updatedAt;
 
+    // Campos extendidos para visualización
+    private String nombreCliente;
+    private String nombreSucursal;
+    private Double saldoVentaActual;
+
     public boolean isValid(Double saldoPendienteVenta) {
         return montoPago != null && montoPago > 0 && montoPago <= saldoPendienteVenta;
     }

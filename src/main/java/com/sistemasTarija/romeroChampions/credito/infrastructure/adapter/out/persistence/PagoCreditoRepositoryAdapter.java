@@ -37,7 +37,21 @@ public class PagoCreditoRepositoryAdapter implements PagoCreditoPersistencePort 
 
     @Override
     public List<PagoCredito> findAllByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        return mapper.toDomainList(repository.buscarConFiltros(idSucursal, fechaInicio, fechaFin));
+        List<Object[]> resultados = repository.buscarConDetalles(idSucursal, fechaInicio, fechaFin);
+        return resultados.stream()
+                .map(obj -> {
+                    PagoCreditoEntity entity = (PagoCreditoEntity) obj[0];
+                    String nombreCliente = (String) obj[1];
+                    String nombreSucursal = (String) obj[2];
+                    Double saldoPendiente = (Double) obj[3];
+                    
+                    PagoCredito domain = mapper.toDomain(entity);
+                    domain.setNombreCliente(nombreCliente);
+                    domain.setNombreSucursal(nombreSucursal);
+                    domain.setSaldoVentaActual(saldoPendiente);
+                    return domain;
+                })
+                .toList();
     }
 
     @Override
