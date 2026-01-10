@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**") // Cambié /api/** por /** para asegurar que cubra todo
                 .allowedOrigins(
                         "http://localhost:4200",                 // Tu Angular local
-                        "https://fastidious-maamoul-cda035.netlify.app" // <--- ¡PEGA AQUÍ TU LINK DE NETLIFY!
+                        "https://romerochampions.netlify.app" // <--- ¡PEGA AQUÍ TU LINK DE NETLIFY!
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
