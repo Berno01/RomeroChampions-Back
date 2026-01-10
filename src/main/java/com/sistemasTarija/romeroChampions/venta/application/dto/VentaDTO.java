@@ -39,6 +39,8 @@ public class VentaDTO {
     private String tipoDescuento;
     @JsonProperty("tipo_venta")
     private String tipo;
+    @JsonProperty("id_cliente")
+    private Integer idCliente;
     @JsonProperty("id_usuario")
     private Integer idUsuario;
     @JsonProperty("username")

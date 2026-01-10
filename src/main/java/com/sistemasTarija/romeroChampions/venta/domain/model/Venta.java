@@ -15,6 +15,7 @@ public class Venta {
     private Integer idVenta;
     private LocalDateTime fecha;
     private Integer idSucursal;
+    private Integer idCliente;
     private Double total;
     private Double montoEfectivo;
     private Double montoQr;
@@ -31,10 +32,11 @@ public class Venta {
     private Integer updatedBy;
     private List<DetalleVenta> detalleVenta;
 
-    public Venta(Integer idVenta, LocalDateTime fecha, Integer idSucursal, Double montoEfectivo,  Double montoQr, Double montoTarjeta, Double descuento, String tipoDescuento, String tipoVenta, LocalDateTime fechaLimite, List<DetalleVenta> detalleVenta) {
+    public Venta(Integer idVenta, LocalDateTime fecha, Integer idSucursal, Integer idCliente, Double montoEfectivo,  Double montoQr, Double montoTarjeta, Double descuento, String tipoDescuento, String tipoVenta, LocalDateTime fechaLimite, List<DetalleVenta> detalleVenta) {
         this.idVenta = idVenta;
         this.fecha = fecha;
         this.idSucursal = idSucursal;
+        this.idCliente = idCliente;
         this.detalleVenta = detalleVenta;
         this.descuento = descuento != null ? descuento : 0.0;
         calcularTotal();
@@ -102,7 +104,7 @@ public class Venta {
         }
     }
 
-    public void actualizarDatos(List<DetalleVenta> nuevosDetalles, Double efectivo, Double qr, Double tarjeta, Double descuento, String tipoDescuento, String tipo, LocalDateTime fechaLimite) {
+    public void actualizarDatos(List<DetalleVenta> nuevosDetalles, Double efectivo, Double qr, Double tarjeta, Double descuento, String tipoDescuento, String tipo, LocalDateTime fechaLimite, Integer idCliente) {
         this.detalleVenta = nuevosDetalles;
         this.montoEfectivo = efectivo != null ? efectivo : 0.0;
         this.montoQr = qr != null ? qr : 0.0;
@@ -111,6 +113,7 @@ public class Venta {
         this.tipoDescuento = tipoDescuento;
         this.tipoVenta = tipo;
         this.fechaLimite = fechaLimite;
+        this.idCliente = idCliente;
         this.calcularTotal();
         this.checkMontosPago();
     }

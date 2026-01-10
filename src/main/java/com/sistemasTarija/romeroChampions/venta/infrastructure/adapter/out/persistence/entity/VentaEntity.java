@@ -24,6 +24,10 @@ public class VentaEntity {
     private LocalDateTime fecha;
     @Column(name = "id_sucursal")
     private Integer idSucursal;
+    
+    @Column(name = "id_cliente")
+    private Integer idCliente;
+
     @Column(name = "total_venta")
     private Double total;
 

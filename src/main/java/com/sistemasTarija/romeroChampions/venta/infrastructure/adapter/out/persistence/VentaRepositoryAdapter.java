@@ -9,7 +9,9 @@ import com.sistemasTarija.romeroChampions.venta.infrastructure.adapter.out.persi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import com.sistemasTarija.romeroChampions.venta.application.dto.ResumenDeudaClienteDTO;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,5 +45,25 @@ public class VentaRepositoryAdapter implements VentaPersistancePort {
         return mapper.toListVentaModel(entities);
     }
 
+    @Override
+    public List<ResumenDeudaClienteDTO> findResumenDeudores(Integer idSucursal) {
+        List<Object[]> resultados = repository.encontrarResumenDeudores(idSucursal);
+        List<ResumenDeudaClienteDTO> dtos = new ArrayList<>();
+        
+        for (Object[] fila : resultados) {
+            ResumenDeudaClienteDTO dto = new ResumenDeudaClienteDTO();
+            dto.setIdCliente((Integer) fila[0]);
+            dto.setCantidadVentasPendientes((Long) fila[1]);
+            dto.setTotalDeuda((Double) fila[2]);
+            dto.setProximoVencimiento((LocalDateTime) fila[3]);
+            // El nombre se llenará en el servicio
+            dtos.add(dto);
+        }
+        return dtos;
+    }
 
+    @Override
+    public List<Venta> findVentasPendientesByCliente(Integer idCliente, Integer idSucursal) {
+        return mapper.toListVentaModel(repository.encontrarVentasPendientesPorCliente(idCliente, idSucursal));
+    }
 }

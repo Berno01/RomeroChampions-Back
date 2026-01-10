@@ -1,5 +1,11 @@
 package com.sistemasTarija.romeroChampions.venta.application.service;
 
+import com.sistemasTarija.romeroChampions.venta.application.dto.ResumenDeudaClienteDTO;
+import com.sistemasTarija.romeroChampions.venta.application.dto.VentaCreditoPendienteDTO;
+import com.sistemasTarija.romeroChampions.venta.application.port.out.ClienteIntegrationPort;
+import com.sistemasTarija.romeroChampions.cliente.application.dto.ClienteDTO;
+
+// imports
 import com.sistemasTarija.romeroChampions.venta.application.dto.VentaFilterDTO;
 import com.sistemasTarija.romeroChampions.venta.application.port.in.*;
 import com.sistemasTarija.romeroChampions.venta.application.port.out.InventarioPersistancePort;
@@ -26,11 +32,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class VentaService implements CreateVentaUseCase, FindVentaUseCase, UpdateVentaUseCase, DeleteVentaUseCase {
+public class VentaService implements CreateVentaUseCase, FindVentaUseCase, UpdateVentaUseCase, DeleteVentaUseCase, GestionDeudasUseCase {
 
     private final VentaPersistancePort ventaPort;
     private final InventarioPersistancePort inventarioPort;
     private final FindUsuarioUseCase findUsuarioUseCase;
+    private final ClienteIntegrationPort clienteIntegrationPort; // Injected for name resolution
     private final VentaMapper mapper;
 
 
@@ -41,7 +48,11 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
         if (ventaDTO.getFecha() == null) {
             ventaDTO.setFecha(LocalDateTime.now(java.time.ZoneId.of("America/La_Paz")));
         }
-        
+
+        if ("CREDITO".equals(ventaDTO.getTipo()) && ventaDTO.getIdCliente() == null) {
+            throw new VentaFailedException("Para ventas a CREDITO, el cliente es obligatorio.");
+        }
+
         Venta venta = mapper.toDomain(ventaDTO);
         
         // Set audit fields for creation
@@ -141,6 +152,10 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
                         Integer::sum
                 ));
 
+        if ("CREDITO".equals(ventaDTO.getTipo()) && ventaDTO.getIdCliente() == null) {
+            throw new VentaFailedException("Para ventas a CREDITO, el cliente es obligatorio.");
+        }
+
         Venta ventaNuevaDatos = mapper.toDomain(ventaDTO);
 
         // 2. Procesar nuevos items y calcular deltas
@@ -199,7 +214,8 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
                 ventaNuevaDatos.getDescuento(),
                 ventaNuevaDatos.getTipoDescuento(),
                 ventaNuevaDatos.getTipoVenta(),
-                ventaNuevaDatos.getFechaLimite()
+                ventaNuevaDatos.getFechaLimite(),
+                ventaNuevaDatos.getIdCliente()
         );
         
         // Update audit fields
@@ -269,5 +285,49 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
         }
         venta.setEstadoVenta(true);
         ventaPort.save(venta);
+    }
+
+    @Override
+    public List<ResumenDeudaClienteDTO> getResumenDeudores(Integer idUsuario) {
+        Usuario usuario = findUsuarioUseCase.findById(idUsuario);
+        Integer idSucursal = usuario.isAdmin() ? null : usuario.getIdSucursal();
+
+        List<ResumenDeudaClienteDTO> resumenes = ventaPort.findResumenDeudores(idSucursal);
+
+        // Optimización: Si se requiere, cargar nombres de clientes.
+        // Dado el requerimiento de velocidad, idéalmente esto sería un JOIN en DB.
+        // Como estamos en módulos separados (lógicamente), hacemos el enriquecimiento aquí.
+        // Si hay muchos, esto podría ser lento (N+1), pero es lo arquitectónicamente correcto.
+        // Cachear Clientes sería la solución real si es lento.
+        
+        for (ResumenDeudaClienteDTO dto : resumenes) {
+            clienteIntegrationPort.findClienteById(dto.getIdCliente()).ifPresent(cliente -> {
+                // Adaptación: El módulo Cliente usa actualmente 'nombreCompleto' y no tiene CI separado
+                dto.setNombreCompleto(cliente.getNombreCompleto());
+                // dto.setCi(cliente.getCi()); // CI no disponible aún en ClienteDTO
+                dto.setCi("N/A"); // Placeholder hasta que se actualice el módulo Cliente
+            });
+            if (dto.getNombreCompleto() == null) {
+                dto.setNombreCompleto("Cliente ID: " + dto.getIdCliente());
+            }
+        }
+        return resumenes;
+    }
+
+    @Override
+    public List<VentaCreditoPendienteDTO> getVentasPendientesPorCliente(Integer idCliente, Integer idUsuario) {
+        Usuario usuario = findUsuarioUseCase.findById(idUsuario);
+        Integer idSucursal = usuario.isAdmin() ? null : usuario.getIdSucursal();
+
+        return ventaPort.findVentasPendientesByCliente(idCliente, idSucursal).stream()
+                .map(venta -> new VentaCreditoPendienteDTO(
+                        venta.getIdVenta(),
+                        venta.getFecha(),
+                        venta.getFechaLimite(),
+                        venta.getSaldoPendiente(),
+                        venta.getDetalleVenta() != null ? venta.getDetalleVenta().size() : 0,
+                        venta.getTotal() // Agregamos total original para contexto
+                ))
+                .collect(Collectors.toList());
     }
 }

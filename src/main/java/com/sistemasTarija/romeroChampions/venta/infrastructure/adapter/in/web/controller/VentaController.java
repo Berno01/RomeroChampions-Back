@@ -2,18 +2,18 @@ package com.sistemasTarija.romeroChampions.venta.infrastructure.adapter.in.web.c
 
 import com.sistemasTarija.romeroChampions.venta.application.dto.VentaDTO;
 import com.sistemasTarija.romeroChampions.venta.application.dto.VentaFilterDTO;
-import com.sistemasTarija.romeroChampions.venta.application.port.in.CreateVentaUseCase;
-import com.sistemasTarija.romeroChampions.venta.application.port.in.DeleteVentaUseCase;
-import com.sistemasTarija.romeroChampions.venta.application.port.in.FindVentaUseCase;
-import com.sistemasTarija.romeroChampions.venta.application.port.in.UpdateVentaUseCase;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
+import com.sistemasTarija.romeroChampions.venta.application.port.in.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import com.sistemasTarija.romeroChampions.venta.application.mapper.VentaMapper;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,33 +23,32 @@ public class VentaController {
     private final FindVentaUseCase findVentaUseCase;
     private final UpdateVentaUseCase updateVentaUseCase;
     private final DeleteVentaUseCase deleteVentaUseCase;
+    private final VentaMapper ventaMapper;
 
-    public VentaController(CreateVentaUseCase createVentaUseCase, FindVentaUseCase findVentaUseCase, UpdateVentaUseCase updateVentaUseCase,  DeleteVentaUseCase deleteVentaUseCase) {
+    public VentaController(CreateVentaUseCase createVentaUseCase, FindVentaUseCase findVentaUseCase, UpdateVentaUseCase updateVentaUseCase,  DeleteVentaUseCase deleteVentaUseCase, VentaMapper ventaMapper) {
         this.createVentaUseCase = createVentaUseCase;
         this.findVentaUseCase  = findVentaUseCase;
         this.updateVentaUseCase  = updateVentaUseCase;
         this.deleteVentaUseCase = deleteVentaUseCase;
-
+        this.ventaMapper = ventaMapper;
     }
 
     @PostMapping
     public ResponseEntity<Map<String, String>> createVenta(@RequestBody VentaDTO ventaDTO) {
-
         createVentaUseCase.save(ventaDTO);
         Map<String, String> response = new HashMap<>();
         response.put("mensaje", "Venta registrada exitosamente");
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{idVenta}")
-    public ResponseEntity<VentaDTO> updateVenta(
-            @PathVariable Integer idVenta,
-            @RequestBody VentaDTO ventaDTO,
-            @RequestHeader("X-Usuario-Id") Integer idUsuario
+    @GetMapping("/{idVenta}")
+    public ResponseEntity<VentaDTO> findById(
+            @RequestHeader("X-Usuario-Id") Integer idUsuario,
+            @PathVariable Integer idVenta
     ) {
-        VentaDTO ventaActualizada = updateVentaUseCase.update(idVenta, ventaDTO, idUsuario);
-        return ResponseEntity.ok(ventaActualizada);
+        return findVentaUseCase.findById(idVenta, idUsuario)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
@@ -63,16 +62,21 @@ public class VentaController {
         return ResponseEntity.ok(findVentaUseCase.findAll(filtro, idUsuario));
     }
 
-    @GetMapping("/{idVenta}")
-    public ResponseEntity<VentaDTO> findById(
-            @RequestHeader("X-Usuario-Id") Integer idUsuario,
-            @PathVariable Integer idVenta
-    ) {
-        return findVentaUseCase.findById(idVenta, idUsuario)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @PostMapping("/filter")
+    public ResponseEntity<List<VentaDTO>> getVentasByFilter(
+            @RequestBody VentaFilterDTO filtro,
+            @RequestHeader("X-Usuario-Id") Integer idUsuario) {
+        return ResponseEntity.ok(findVentaUseCase.findAll(filtro, idUsuario));
     }
 
+    @PutMapping("/{idVenta}")
+    public ResponseEntity<VentaDTO> updateVenta(
+            @PathVariable Integer idVenta,
+            @RequestBody VentaDTO ventaDTO,
+            @RequestHeader("X-Usuario-Id") Integer idUsuario
+    ) {
+        return ResponseEntity.ok(updateVentaUseCase.update(idVenta, ventaDTO, idUsuario));
+    }
 
     @DeleteMapping("/{idVenta}")
     public ResponseEntity<Void> deleteVenta(
@@ -82,7 +86,7 @@ public class VentaController {
         deleteVentaUseCase.delete(idVenta, idUsuario);
         return ResponseEntity.noContent().build();
     }
-
+    
     @PatchMapping("/{idVenta}/activar")
     public ResponseEntity<Map<String, String>> activarVenta(
             @PathVariable Integer idVenta,
@@ -90,8 +94,10 @@ public class VentaController {
     ) {
         deleteVentaUseCase.activate(idVenta, idUsuario);
         Map<String, String> response = new HashMap<>();
+        // Mantenemos mensaje original para no romper contratos
         response.put("mensaje", "Venta reactivada exitosamente. El stock ha sido descontado.");
         return ResponseEntity.ok(response);
     }
+
 
 }

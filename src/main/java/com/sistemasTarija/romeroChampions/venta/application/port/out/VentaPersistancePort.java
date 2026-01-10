@@ -1,5 +1,6 @@
 package com.sistemasTarija.romeroChampions.venta.application.port.out;
 
+import com.sistemasTarija.romeroChampions.venta.application.dto.ResumenDeudaClienteDTO;
 import com.sistemasTarija.romeroChampions.venta.domain.model.Venta;
 
 import java.time.LocalDateTime;
@@ -10,5 +11,6 @@ public interface VentaPersistancePort {
     Venta save(Venta venta);
     Optional<Venta> findByIdAndSucursal(Integer idVenta, Integer idSucursal);
     List<Venta> findAllByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin);
-
+    List<ResumenDeudaClienteDTO> findResumenDeudores(Integer idSucursal);
+    List<Venta> findVentasPendientesByCliente(Integer idCliente, Integer idSucursal);
 }

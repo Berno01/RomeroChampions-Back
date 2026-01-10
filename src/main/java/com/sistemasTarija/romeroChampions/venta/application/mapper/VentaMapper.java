@@ -21,6 +21,7 @@ public class VentaMapper {
                 dto.getIdVenta(),
                 LocalDateTime.now(), // Se genera automáticamente la fecha
                 dto.getIdSucursal(),
+                dto.getIdCliente(),
                 dto.getMontoEfectivo(),
                 dto.getMontoQr(),
                 dto.getMontoTarjeta(),
@@ -59,6 +60,7 @@ public class VentaMapper {
                 domain.getDescuento(),
                 domain.getTipoDescuento(),
                 domain.getTipoVenta(),
+                domain.getIdCliente(),
                 domain.getCreatedBy(),
                 null, // username - se setea en el servicio
                 detallesDto
@@ -79,6 +81,7 @@ public class VentaMapper {
                 domain.getDescuento(),
                 domain.getTipoDescuento(),
                 domain.getTipoVenta(),
+                domain.getIdCliente(),
                 domain.getCreatedBy(),
                 null, // username - se setea en el servicio
                 null // Sin detalle de venta para listados
