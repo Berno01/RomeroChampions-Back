@@ -15,6 +15,9 @@ public class ColorDTO {
     @JsonProperty("codigoHex")
     private String codigoHex;
     
+    @JsonProperty("codigoModeloColor")
+    private String codigoModeloColor;  // Código único del modelo-color
+    
     @JsonProperty("fotoUrl")
     private String fotoUrl;
     

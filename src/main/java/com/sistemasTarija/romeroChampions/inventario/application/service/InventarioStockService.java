@@ -50,6 +50,7 @@ public class InventarioStockService implements ConsultarInventarioUseCase {
         for (ModeloColor modeloColor : modelo.getColores()) {
             String nombreColor = modeloColor.getColor() != null ? modeloColor.getColor().getNombre() : "";
             String codigoHex = modeloColor.getColor() != null ? modeloColor.getColor().getCodigoHex() : "";
+            String codigoModeloColor = modeloColor.getCodigo() != null ? modeloColor.getCodigo() : "";
             coloresSet.add(nombreColor);
             
             for (Variante variante : modeloColor.getVariantes()) {
@@ -57,7 +58,7 @@ public class InventarioStockService implements ConsultarInventarioUseCase {
                 tallasSet.add(nombreTalla);
                 
                 varianteInfoMap.put(variante.getId(), new VarianteInfo(
-                        variante.getId(), nombreColor, codigoHex, nombreTalla
+                        variante.getId(), nombreColor, codigoHex, nombreTalla, codigoModeloColor
                 ));
             }
         }
@@ -132,6 +133,7 @@ public class InventarioStockService implements ConsultarInventarioUseCase {
                             .idVariante(info.idVariante)
                             .nombreColor(info.nombreColor)
                             .codigoHexColor(info.codigoHex)
+                            .codigoModeloColor(info.codigoModeloColor)
                             .nombreTalla(info.nombreTalla)
                             .stock(inv.getStock() != null ? inv.getStock() : 0)
                             .build();
@@ -167,10 +169,17 @@ public class InventarioStockService implements ConsultarInventarioUseCase {
                             .findFirst()
                             .orElse("");
                     
+                    String codigoModeloColor = varianteInfoMap.values().stream()
+                            .filter(v -> v.nombreColor.equals(color))
+                            .map(v -> v.codigoModeloColor)
+                            .findFirst()
+                            .orElse("");
+                    
                     VarianteStockDTO zeroStock = VarianteStockDTO.builder()
                             .idVariante(idVariante)
                             .nombreColor(color)
                             .codigoHexColor(codigoHex)
+                            .codigoModeloColor(codigoModeloColor)
                             .nombreTalla(talla)
                             .stock(0)
                             .build();
@@ -230,10 +239,17 @@ public class InventarioStockService implements ConsultarInventarioUseCase {
                         .findFirst()
                         .orElse("");
                 
+                String codigoModeloColor = varianteInfoMap.values().stream()
+                        .filter(v -> v.nombreColor.equals(color))
+                        .map(v -> v.codigoModeloColor)
+                        .findFirst()
+                        .orElse("");
+                
                 VarianteStockDTO varianteDTO = VarianteStockDTO.builder()
                         .idVariante(idVariante)
                         .nombreColor(color)
                         .codigoHexColor(codigoHex)
+                        .codigoModeloColor(codigoModeloColor)
                         .nombreTalla(talla)
                         .stock(stockTotal)
                         .build();
@@ -256,12 +272,14 @@ public class InventarioStockService implements ConsultarInventarioUseCase {
         String nombreColor;
         String codigoHex;
         String nombreTalla;
+        String codigoModeloColor;
         
-        VarianteInfo(Integer idVariante, String nombreColor, String codigoHex, String nombreTalla) {
+        VarianteInfo(Integer idVariante, String nombreColor, String codigoHex, String nombreTalla, String codigoModeloColor) {
             this.idVariante = idVariante;
             this.nombreColor = nombreColor;
             this.codigoHex = codigoHex;
             this.nombreTalla = nombreTalla;
+            this.codigoModeloColor = codigoModeloColor;
         }
     }
 }

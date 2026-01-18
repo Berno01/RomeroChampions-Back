@@ -10,6 +10,7 @@ import java.util.List;
 public class ColorDTO {
     private String nombreColor;
     private String codigoHex;
+    private String codigoModeloColor;  // Código único del modelo-color
     private String fotoUrl;
     private List<TallaDTO> tallas = new ArrayList<>();
 }

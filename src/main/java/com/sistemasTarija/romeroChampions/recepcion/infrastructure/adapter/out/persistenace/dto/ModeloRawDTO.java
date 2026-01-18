@@ -17,6 +17,7 @@ public class ModeloRawDTO {
     private String nombreCorte;
     private String nombreColor;
     private String codigoHex;
+    private String codigoModeloColor;  // Código único del modelo-color
     private String fotoUrl;
     private Integer idVariante;
     private String nombreTalla;

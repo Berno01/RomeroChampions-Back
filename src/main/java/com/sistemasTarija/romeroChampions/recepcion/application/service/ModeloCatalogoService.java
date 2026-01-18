@@ -58,6 +58,7 @@ public class ModeloCatalogoService implements FindModeloCatalogoUseCase {
             ColorDTO colorDTO = new ColorDTO();
             colorDTO.setNombreColor(nombreColor);
             colorDTO.setCodigoHex(infoVisualColor.getCodigoHex());
+            colorDTO.setCodigoModeloColor(infoVisualColor.getCodigoModeloColor());
             colorDTO.setFotoUrl(infoVisualColor.getFotoUrl());
 
             // Mapear las tallas (sin stock, solo idVariante y nombre)

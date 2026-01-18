@@ -32,7 +32,6 @@ public class ModeloMapper {
         return Modelo.builder()
                 .nombre(request.getNombreModelo())
                 .precio(request.getPrecio())
-                .codigo(request.getCodigo())
                 .idMarca(request.getIdMarca())
                 .idCategoria(request.getIdCategoria())
                 .idEstilo(request.getIdEstilo())
@@ -45,6 +44,7 @@ public class ModeloMapper {
         if (request == null) return null;
         return ModeloColor.builder()
                 .idColor(request.getIdColor())
+                .codigo(request.getCodigo())
                 .fotoUrl(request.getFotoUrl())
                 .build();
     }
@@ -75,6 +75,7 @@ public class ModeloMapper {
         
         return ModeloListadoDTO.ModeloColorListadoDTO.builder()
                 .id(modeloColor.getId())
+                .codigo(modeloColor.getCodigo())
                 .fotoUrl(modeloColor.getFotoUrl())
                 .color(catalogoMapper.toColorDTO(modeloColor.getColor()))
                 .build();
@@ -95,7 +96,6 @@ public class ModeloMapper {
                 .id(modelo.getId())
                 .nombre(modelo.getNombre())
                 .precio(modelo.getPrecio())
-                .codigo(modelo.getCodigo())
                 .marca(catalogoMapper.toMarcaDTO(modelo.getMarca()))
                 .categoria(catalogoMapper.toCategoriaDTO(modelo.getCategoria()))
                 .estilo(catalogoMapper.toEstiloDTO(modelo.getEstilo()))
@@ -116,6 +116,7 @@ public class ModeloMapper {
 
         return ModeloDTO.ModeloColorDTO.builder()
                 .id(modeloColor.getId())
+                .codigo(modeloColor.getCodigo())
                 .fotoUrl(modeloColor.getFotoUrl())
                 .color(catalogoMapper.toColorDTO(modeloColor.getColor()))
                 .variantes(variantesDTO)

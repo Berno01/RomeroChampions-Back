@@ -16,4 +16,13 @@ public interface ModeloColorInventarioRepository extends JpaRepository<ModeloCol
             "LEFT JOIN FETCH mc.color " +
             "WHERE mc.modelo.id = :idModelo")
     List<ModeloColorInventarioEntity> findByModeloIdWithColor(@Param("idModelo") Integer idModelo);
+    
+    /**
+     * Obtiene solo los códigos de los colores de un modelo (query optimizada)
+     */
+    @Query("SELECT mc.codigo FROM ModeloColorInventarioEntity mc " +
+            "WHERE mc.modelo.id = :idModelo " +
+            "AND mc.codigo IS NOT NULL " +
+            "ORDER BY mc.codigo")
+    List<String> findCodigosByModeloId(@Param("idModelo") Integer idModelo);
 }

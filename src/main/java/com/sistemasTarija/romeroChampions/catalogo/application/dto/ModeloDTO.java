@@ -17,7 +17,6 @@ public class ModeloDTO {
     private Integer id;
     private String nombre;
     private Double precio;
-    private String codigo;
     private OptionDTO marca;
     private OptionDTO categoria;
     private OptionDTO estilo;
@@ -30,6 +29,7 @@ public class ModeloDTO {
     @NoArgsConstructor
     public static class ModeloColorDTO {
         private Integer id;
+        private String codigo;
         private String fotoUrl;
         private ColorDTO color;
         private List<VarianteDTO> variantes;

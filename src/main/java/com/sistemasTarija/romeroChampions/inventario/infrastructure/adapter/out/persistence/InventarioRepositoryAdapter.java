@@ -32,7 +32,15 @@ public class InventarioRepositoryAdapter implements InventarioPersistencePort {
     @Override
     public List<InventarioResumenDTO> obtenerResumenGlobal() {
         // Query optimizada ejecutada directamente en BD
-        return inventarioRepository.obtenerResumenGlobal();
+        List<InventarioResumenDTO> resumen = inventarioRepository.obtenerResumenGlobal();
+        
+        // Poblar los códigos de cada modelo con una query adicional eficiente
+        resumen.forEach(dto -> {
+            List<String> codigos = modeloColorRepository.findCodigosByModeloId(dto.getIdModelo());
+            dto.setCodigos(codigos);
+        });
+        
+        return resumen;
     }
     
     @Override

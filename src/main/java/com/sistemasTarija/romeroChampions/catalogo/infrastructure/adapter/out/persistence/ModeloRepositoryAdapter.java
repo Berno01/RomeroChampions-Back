@@ -33,7 +33,6 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 
                 // Actualizar campos básicos del modelo usando los IDs directamente
                 existingEntity.setNombre(modelo.getNombre());
-                existingEntity.setCodigo(modelo.getCodigo());
                 existingEntity.setIdMarca(modelo.getIdMarca());
                 existingEntity.setIdCategoria(modelo.getIdCategoria());
                 existingEntity.setIdEstilo(modelo.getIdEstilo());
@@ -88,13 +87,15 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
             ModeloColorCatalogoEntity existingColor = existingColorMap.get(modeloColor.getIdColor());
             
             if (existingColor != null) {
-                // El color YA EXISTE: actualizar foto y recrear variantes
+                // El color YA EXISTE: actualizar foto, codigo y recrear variantes
                 existingColor.setFotoUrl(modeloColor.getFotoUrl());
+                existingColor.setCodigo(modeloColor.getCodigo());
                 updateVariantes(existingColor, modeloColor);
             } else {
                 // Color NUEVO: AGREGAR a la lista
                 ModeloColorCatalogoEntity newColor = new ModeloColorCatalogoEntity();
                 newColor.setFotoUrl(modeloColor.getFotoUrl());
+                newColor.setCodigo(modeloColor.getCodigo());
                 newColor.setIdColor(modeloColor.getIdColor());
                 newColor.setModelo(existingEntity);
                 newColor.setVariantes(new ArrayList<>());

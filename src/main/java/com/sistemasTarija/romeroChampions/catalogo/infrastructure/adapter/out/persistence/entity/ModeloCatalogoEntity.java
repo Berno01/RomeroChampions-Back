@@ -29,9 +29,6 @@ public class ModeloCatalogoEntity {
     @Column(name = "precio")
     private Double precio;
 
-    @Column(name = "codigo")
-    private String codigo;
-
     @Column(name = "id_marca")
     private Integer idMarca;
 

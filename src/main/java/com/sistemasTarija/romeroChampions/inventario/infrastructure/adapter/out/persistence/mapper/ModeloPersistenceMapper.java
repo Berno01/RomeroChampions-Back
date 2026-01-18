@@ -55,6 +55,7 @@ public class ModeloPersistenceMapper {
         
         ModeloColor modeloColor = ModeloColor.builder()
                 .id(entity.getId())
+                .codigo(entity.getCodigo())
                 .fotoUrl(entity.getFotoUrl())
                 .idColor(entity.getColor() != null ? entity.getColor().getId() : null)
                 .variantes(new ArrayList<>())

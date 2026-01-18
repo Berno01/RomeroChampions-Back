@@ -25,8 +25,6 @@ public class RegistrarModeloRequest {
     private Integer idEstilo;
     @JsonProperty("idGenero")
     private Integer idGenero;
-    @JsonProperty("codigo")
-    private String codigo;
     @JsonProperty("colores")
     private List<ColorRequest> colores;
 
@@ -40,6 +38,8 @@ public class RegistrarModeloRequest {
     public static class ColorRequest {
         @JsonProperty("idColor")
         private Integer idColor;
+        @JsonProperty("codigo")
+        private String codigo;
         @JsonProperty("fotoUrl")
         private String fotoUrl;
     }

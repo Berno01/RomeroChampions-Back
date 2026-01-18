@@ -16,5 +16,6 @@ public class VarianteStockDTO {
     private String nombreTalla;
     private String nombreColor;
     private String codigoHexColor;
+    private String codigoModeloColor;  // Código único del modelo-color
     private Integer stock;  // Stock en la sucursal específica (0 si no existe registro)
 }

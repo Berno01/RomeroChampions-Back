@@ -22,7 +22,7 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
 
     @Query("SELECT new com.sistemasTarija.romeroChampions.venta.infrastructure.adapter.out.persistence.dto.InventarioRawDTO(" +
            "m.id, m.nombre, m.precio, ma.nombre, c.nombre, e.nombre, " +
-           "co.nombre, co.codigoHex, mc.fotoUrl, " +
+           "co.nombre, co.codigoHex, mc.codigo, mc.fotoUrl, " +
            "v.id, t.nombre, i.stockInventario) " +
            "FROM InventarioVentaEntity i " +
            "JOIN i.variante v " +
@@ -50,4 +50,25 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
            "WHERE i.idSucursal = :idSucursal AND i.estado = true AND m.estado = true " +
            "GROUP BY m.id, m.nombre, m.precio, ma.nombre, c.nombre")
     List<ResumenPrendaDTO> obtenerListadoResumen(@Param("idSucursal") Integer idSucursal);
+    
+    /**
+     * Obtiene solo los códigos de los colores de un modelo (query optimizada)
+     */
+    @Query("SELECT mc.codigo FROM ModeloColorEntity mc " +
+           "WHERE mc.modelo.id = :idModelo " +
+           "AND mc.codigo IS NOT NULL " +
+           "ORDER BY mc.codigo")
+    List<String> findCodigosByModeloId(@Param("idModelo") Integer idModelo);
+    
+    /**
+     * Obtiene solo las tallas disponibles de un modelo en una sucursal (query optimizada)
+     */
+    @Query("SELECT DISTINCT t.nombre FROM VarianteEntity v " +
+           "JOIN v.talla t " +
+           "JOIN InventarioEntity i ON i.variante.id = v.id " +
+           "WHERE v.modeloColor.modelo.id = :idModelo " +
+           "AND i.idSucursal = :idSucursal " +
+           "AND i.estado = true " +
+           "ORDER BY t.nombre")
+    List<String> findTallasByModeloIdAndSucursal(@Param("idModelo") Integer idModelo, @Param("idSucursal") Integer idSucursal);
 }

@@ -16,5 +16,5 @@ public class DetallePrendaDTO {
     private String nombreCategoria;
     private String nombreCorte;
     private Integer stockTotalSucursal;
-    private List<ColorDTO> colores = new ArrayList<>();
+    private List<ColorDTO> colores = new ArrayList<>();  // Estructura completa con colores y variantes
 }

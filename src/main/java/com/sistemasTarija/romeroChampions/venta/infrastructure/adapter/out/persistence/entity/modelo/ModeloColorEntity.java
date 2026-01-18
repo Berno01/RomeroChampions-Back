@@ -9,6 +9,9 @@ public class ModeloColorEntity {
     @Column(name = "id_modelo_color")
     private Integer id;
 
+    @Column(name = "codigo")
+    private String codigo;
+
     @Column(name = "foto_url")
     private String fotoUrl;
 

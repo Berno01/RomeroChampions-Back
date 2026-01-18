@@ -17,7 +17,15 @@ public class ModeloCatalogoRepositoryAdapter implements ModeloCatalogoPersistanc
 
     @Override
     public List<ResumenModeloDTO> obtenerListadoModelos() {
-        return repository.obtenerListadoModelos();
+        List<ResumenModeloDTO> resumen = repository.obtenerListadoModelos();
+        
+        // Poblar los códigos de cada modelo con una query adicional eficiente
+        resumen.forEach(dto -> {
+            List<String> codigos = repository.findCodigosByModeloId(dto.getIdModelo());
+            dto.setCodigos(codigos);
+        });
+        
+        return resumen;
     }
 
     @Override

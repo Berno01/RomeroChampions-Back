@@ -17,6 +17,7 @@ public class InventarioRawDTO {
     // Datos de la Variante Visual (Color)
     private String nombreColor;
     private String codigoHex;
+    private String codigoModeloColor;  // Código único del modelo-color
     private String fotoUrl;
 
     // Datos de Inventario (Talla y Stock)

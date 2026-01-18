@@ -37,6 +37,7 @@ public interface ModeloCatalogoRepository extends JpaRepository<ModeloCatalogoEn
             "es.nombre, " +             // nombreCorte
             "col.nombre, " +            // nombreColor
             "col.codigoHex, " +         // codigoHex
+            "mc.codigo, " +             // codigoModeloColor
             "mc.fotoUrl, " +            // fotoUrl
             "v.id, " +                  // idVariante
             "t.nombre) " +              // nombreTalla
@@ -52,4 +53,13 @@ public interface ModeloCatalogoRepository extends JpaRepository<ModeloCatalogoEn
             "AND m.estado = true " +
             "ORDER BY col.nombre, t.nombre")
     List<ModeloRawDTO> obtenerDetalleModeloRaw(@Param("idModelo") Integer idModelo);
+    
+    /**
+     * Obtiene solo los códigos de los colores de un modelo (query optimizada)
+     */
+    @Query("SELECT mc.codigo FROM ModeloColorCatalogoEntity mc " +
+           "WHERE mc.modelo.id = :idModelo " +
+           "AND mc.codigo IS NOT NULL " +
+           "ORDER BY mc.codigo")
+    List<String> findCodigosByModeloId(@Param("idModelo") Integer idModelo);
 }

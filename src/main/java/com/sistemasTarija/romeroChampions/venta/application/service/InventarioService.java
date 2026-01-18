@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class InventarioService implements FindCatalogoUseCase {
             throw new InventarioFailedExeption("El modelo solicitado no existe o no tiene stock disponible en esta sucursal.");
         }
 
-        // 2. Extraer cabecera (Tomamos el primer registro porque los datos del modelo se repiten en todos)
+        // Extraer cabecera (primer registro)
         InventarioRawDTO cabecera = rawList.get(0);
 
         DetallePrendaDTO detalleDTO = new DetallePrendaDTO();
@@ -51,35 +52,40 @@ public class InventarioService implements FindCatalogoUseCase {
         detalleDTO.setNombreCategoria(cabecera.getNombreCategoria());
         detalleDTO.setNombreCorte(cabecera.getNombreEstilo());
 
-
+        // Agrupar variantes por color
         Map<String, List<InventarioRawDTO>> variantesPorColor = rawList.stream()
                 .collect(Collectors.groupingBy(InventarioRawDTO::getNombreColor));
 
         List<ColorDTO> listaColores = new ArrayList<>();
 
         variantesPorColor.forEach((nombreColor, listaVariantesDelColor) -> {
-
             InventarioRawDTO infoVisualColor = listaVariantesDelColor.get(0);
 
             ColorDTO colorDTO = new ColorDTO();
             colorDTO.setNombreColor(nombreColor);
             colorDTO.setCodigoHex(infoVisualColor.getCodigoHex());
+            colorDTO.setCodigoModeloColor(infoVisualColor.getCodigoModeloColor());
             colorDTO.setFotoUrl(infoVisualColor.getFotoUrl());
-
 
             List<TallaDTO> listaTallas = listaVariantesDelColor.stream()
                     .map(item -> new TallaDTO(
-                            item.getIdVariante(),  // Este es el ID que el front mandará al vender
-                            item.getNombreTalla(), // "S", "M", "L"
-                            item.getStock()        // "40", "15"
+                            item.getIdVariante(),
+                            item.getNombreTalla(),
+                            item.getStock()
                     ))
                     .collect(Collectors.toList());
 
             colorDTO.setTallas(listaTallas);
-
             listaColores.add(colorDTO);
         });
+
         detalleDTO.setColores(listaColores);
+
+        // Calcular stock total
+        Integer stockTotal = rawList.stream()
+                .map(InventarioRawDTO::getStock)
+                .reduce(0, Integer::sum);
+        detalleDTO.setStockTotalSucursal(stockTotal);
 
         return detalleDTO;
     }

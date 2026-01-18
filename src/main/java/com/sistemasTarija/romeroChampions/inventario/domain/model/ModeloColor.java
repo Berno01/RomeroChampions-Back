@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class ModeloColor {
     private Integer id;
+    private String codigo;
     private String fotoUrl;
     private Integer idColor;
     private Color color;

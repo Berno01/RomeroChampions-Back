@@ -15,9 +15,6 @@ public class ModeloEntity {
     @Column(name = "precio")
     private Double precio;
 
-    @Column(name = "codigo")
-    private String codigo;
-
     @ManyToOne @JoinColumn(name = "id_marca")
     private MarcaEntity marca;
 

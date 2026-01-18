@@ -46,6 +46,17 @@ public class InventarioVentaRepositoryAdapter implements InventarioPersistancePo
 
     @Override
     public List<ResumenPrendaDTO> obtenerListadoResumen(Integer idSucursal) {
-        return repository.obtenerListadoResumen(idSucursal);
+        List<ResumenPrendaDTO> resumen = repository.obtenerListadoResumen(idSucursal);
+        
+        // Poblar los códigos y tallas de cada modelo con queries adicionales eficientes
+        resumen.forEach(dto -> {
+            List<String> codigos = repository.findCodigosByModeloId(dto.getIdModelo());
+            dto.setCodigos(codigos);
+            
+            List<String> tallas = repository.findTallasByModeloIdAndSucursal(dto.getIdModelo(), idSucursal);
+            dto.setTallas(tallas);
+        });
+        
+        return resumen;
     }
 }
