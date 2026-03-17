@@ -20,6 +20,9 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
     @Query("SELECT i FROM InventarioVentaEntity i WHERE i.variante.id = :idVariante AND i.idSucursal = :idSucursal")
     Optional<InventarioVentaEntity> findByIdVarianteAndIdSucursal(@Param("idVariante") Integer idVariante, @Param("idSucursal") Integer idSucursal);
 
+       @Query("SELECT v.modeloColor.modelo.costoActual FROM VarianteEntity v WHERE v.id = :idVariante")
+       Optional<Double> findCostoActualByIdVariante(@Param("idVariante") Integer idVariante);
+
     @Query("SELECT new com.sistemasTarija.romeroChampions.venta.infrastructure.adapter.out.persistence.dto.InventarioRawDTO(" +
            "m.id, m.nombre, m.precio, ma.nombre, c.nombre, e.nombre, " +
            "co.nombre, co.codigoHex, mc.codigo, mc.fotoUrl, " +

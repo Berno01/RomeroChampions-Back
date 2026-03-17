@@ -3,9 +3,11 @@ package com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.p
 import com.sistemasTarija.romeroChampions.catalogo.application.port.out.ModeloPersistencePort;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.Modelo;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.ModeloColor;
+import com.sistemasTarija.romeroChampions.catalogo.domain.model.ModeloColorFoto;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.Variante;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.ModeloCatalogoEntity;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.ModeloColorCatalogoEntity;
+import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.ModeloColorFotoCatalogoEntity;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.VarianteCatalogoEntity;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.mapper.ModeloPersistenceMapper;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.repository.ModeloRepository;
@@ -38,6 +40,7 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 existingEntity.setIdEstilo(modelo.getIdEstilo());
                 existingEntity.setIdGenero(modelo.getIdGenero());
                 existingEntity.setPrecio(modelo.getPrecio());
+                existingEntity.setCostoActual(modelo.getCostoActual());
                 existingEntity.setEstado(modelo.getEstado());
                 
                 // Manejar colores y variantes de forma inteligente (sin eliminar, solo actualizar/agregar)
@@ -57,6 +60,9 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 color.setModelo(entity);
                 if (color.getVariantes() != null) {
                     color.getVariantes().forEach(variante -> variante.setModeloColor(color));
+                }
+                if (color.getFotos() != null) {
+                    color.getFotos().forEach(foto -> foto.setModeloColor(color));
                 }
             });
         }
@@ -91,6 +97,7 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 existingColor.setFotoUrl(modeloColor.getFotoUrl());
                 existingColor.setCodigo(modeloColor.getCodigo());
                 updateVariantes(existingColor, modeloColor);
+                replaceFotos(existingColor, modeloColor);
             } else {
                 // Color NUEVO: AGREGAR a la lista
                 ModeloColorCatalogoEntity newColor = new ModeloColorCatalogoEntity();
@@ -99,6 +106,7 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 newColor.setIdColor(modeloColor.getIdColor());
                 newColor.setModelo(existingEntity);
                 newColor.setVariantes(new ArrayList<>());
+                newColor.setFotos(new ArrayList<>());
                 
                 // Agregar las variantes del color nuevo
                 if (modeloColor.getVariantes() != null) {
@@ -109,6 +117,8 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                         newColor.getVariantes().add(varianteEntity);
                     }
                 }
+
+                replaceFotos(newColor, modeloColor);
                 
                 existingEntity.getColores().add(newColor);
             }
@@ -140,6 +150,65 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 }
             }
         }
+    }
+
+    private void replaceFotos(ModeloColorCatalogoEntity colorEntity, ModeloColor modeloColor) {
+        List<ModeloColorFoto> requestedFotos = modeloColor.getFotos();
+        boolean hasExplicitFotos = requestedFotos != null && !requestedFotos.isEmpty();
+        boolean hasPrincipalFoto = modeloColor.getFotoUrl() != null && !modeloColor.getFotoUrl().isBlank();
+
+        if (!hasExplicitFotos && !hasPrincipalFoto) {
+            return;
+        }
+
+        List<String> orderedUrls = new ArrayList<>();
+
+        if (hasPrincipalFoto) {
+            orderedUrls.add(modeloColor.getFotoUrl());
+        }
+
+        if (hasExplicitFotos) {
+            for (ModeloColorFoto foto : requestedFotos) {
+                if (foto == null || foto.getFotoUrl() == null) {
+                    continue;
+                }
+                String url = foto.getFotoUrl().trim();
+                if (!url.isBlank() && !orderedUrls.contains(url)) {
+                    orderedUrls.add(url);
+                }
+            }
+        }
+
+        if (orderedUrls.isEmpty()) {
+            return;
+        }
+
+        if (colorEntity.getFotos() == null) {
+            colorEntity.setFotos(new ArrayList<>());
+        }
+
+        // For existing colors, force-delete current photo rows before reinserting order 1..N.
+        // This avoids transient unique collisions on uk_mcf_orden during Hibernate flush ordering.
+        if (colorEntity.getId() != null && !colorEntity.getFotos().isEmpty()) {
+            colorEntity.getFotos().clear();
+            modeloRepository.flush();
+        } else {
+            colorEntity.getFotos().clear();
+        }
+
+        int orden = 1;
+        for (String url : orderedUrls) {
+            ModeloColorFotoCatalogoEntity fotoEntity = ModeloColorFotoCatalogoEntity.builder()
+                    .fotoUrl(url)
+                    .orden(orden)
+                    .esPrincipal(orden == 1)
+                    .build();
+            fotoEntity.setModeloColor(colorEntity);
+            colorEntity.getFotos().add(fotoEntity);
+            orden++;
+        }
+
+        colorEntity.setFotoUrl(orderedUrls.get(0));
     }
 
     @Override

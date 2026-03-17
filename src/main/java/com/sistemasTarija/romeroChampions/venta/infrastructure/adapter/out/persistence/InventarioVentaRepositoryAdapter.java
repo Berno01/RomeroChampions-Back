@@ -40,6 +40,11 @@ public class InventarioVentaRepositoryAdapter implements InventarioPersistancePo
     }
 
     @Override
+    public Optional<Double> findCostoActualByIdVariante(Integer idVariante) {
+        return repository.findCostoActualByIdVariante(idVariante);
+    }
+
+    @Override
     public List<InventarioRawDTO> obtenerDetalleModeloRaw(Integer idSucursal, Integer idModelo) {
         return repository.obtenerDetalleModeloRaw(idSucursal, idModelo);
     }

@@ -16,7 +16,61 @@ public interface DashboardRepository extends JpaRepository<VentaEntity, Integer>
     @Query(value = "SELECT " +
            "COALESCE(SUM(v.total_venta), 0.0) as totalVentas, " +
            "COALESCE(COUNT(v.id_venta), 0) as cantidadVentas, " +
-           "COALESCE(AVG(v.total_venta), 0.0) as ticketPromedio, " +
+            "COALESCE((SELECT SUM(dv.ganancia_total) " +
+            "          FROM detalle_venta dv " +
+            "          WHERE dv.id_venta IN (SELECT v2.id_venta " +
+            "                                 FROM venta v2 " +
+            "                                 WHERE v2.estado_venta = true " +
+            "                                 AND (:idSucursal IS NULL OR v2.id_sucursal = :idSucursal) " +
+            "                                 AND v2.fecha_venta BETWEEN :fechaInicio AND :fechaFin)), 0.0) as gananciaDevengada, " +
+            "COALESCE((SELECT SUM( " +
+            "          CASE " +
+            "            WHEN x.valor_real_venta <= 0 THEN 0 " +
+            "            WHEN x.tipo_venta = 'CONTADO' THEN x.ganancia_devengada " +
+            "            WHEN x.tipo_venta = 'CREDITO' THEN x.ganancia_devengada * " +
+            "                 GREATEST(0, LEAST(1, (x.valor_real_venta - COALESCE(x.saldo_pendiente, 0)) / x.valor_real_venta)) " +
+            "            ELSE x.ganancia_devengada " +
+            "          END) " +
+            "          FROM ( " +
+            "            SELECT v3.id_venta, v3.tipo_venta, COALESCE(v3.saldo_pendiente, 0) AS saldo_pendiente, " +
+            "                   (COALESCE(SUM(dv3.total), 0) - COALESCE(v3.descuento, 0)) AS valor_real_venta, " +
+            "                   COALESCE(SUM(dv3.ganancia_total), 0) AS ganancia_devengada " +
+            "            FROM venta v3 " +
+            "            LEFT JOIN detalle_venta dv3 ON dv3.id_venta = v3.id_venta " +
+            "            WHERE v3.estado_venta = true " +
+            "              AND (:idSucursal IS NULL OR v3.id_sucursal = :idSucursal) " +
+            "              AND v3.fecha_venta BETWEEN :fechaInicio AND :fechaFin " +
+            "            GROUP BY v3.id_venta, v3.tipo_venta, v3.saldo_pendiente, v3.descuento " +
+            "          ) x), 0.0) as gananciaCobrada, " +
+            "( " +
+            "  COALESCE((SELECT SUM(dv.ganancia_total) " +
+            "            FROM detalle_venta dv " +
+            "            WHERE dv.id_venta IN (SELECT v2.id_venta " +
+            "                                   FROM venta v2 " +
+            "                                   WHERE v2.estado_venta = true " +
+            "                                   AND (:idSucursal IS NULL OR v2.id_sucursal = :idSucursal) " +
+            "                                   AND v2.fecha_venta BETWEEN :fechaInicio AND :fechaFin)), 0.0) " +
+            "  - " +
+            "  COALESCE((SELECT SUM( " +
+            "            CASE " +
+            "              WHEN y.valor_real_venta <= 0 THEN 0 " +
+            "              WHEN y.tipo_venta = 'CONTADO' THEN y.ganancia_devengada " +
+            "              WHEN y.tipo_venta = 'CREDITO' THEN y.ganancia_devengada * " +
+            "                   GREATEST(0, LEAST(1, (y.valor_real_venta - COALESCE(y.saldo_pendiente, 0)) / y.valor_real_venta)) " +
+            "              ELSE y.ganancia_devengada " +
+            "            END) " +
+            "            FROM ( " +
+            "              SELECT v4.id_venta, v4.tipo_venta, COALESCE(v4.saldo_pendiente, 0) AS saldo_pendiente, " +
+            "                     (COALESCE(SUM(dv4.total), 0) - COALESCE(v4.descuento, 0)) AS valor_real_venta, " +
+            "                     COALESCE(SUM(dv4.ganancia_total), 0) AS ganancia_devengada " +
+            "              FROM venta v4 " +
+            "              LEFT JOIN detalle_venta dv4 ON dv4.id_venta = v4.id_venta " +
+            "              WHERE v4.estado_venta = true " +
+            "                AND (:idSucursal IS NULL OR v4.id_sucursal = :idSucursal) " +
+            "                AND v4.fecha_venta BETWEEN :fechaInicio AND :fechaFin " +
+            "              GROUP BY v4.id_venta, v4.tipo_venta, v4.saldo_pendiente, v4.descuento " +
+            "            ) y), 0.0) " +
+            ") as gananciaPendiente, " +
            "COALESCE((SELECT SUM(dv.cantidad) " +
            "          FROM detalle_venta dv " +
            "          WHERE dv.id_venta IN (SELECT v2.id_venta " +

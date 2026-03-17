@@ -40,4 +40,8 @@ public class ModeloColorCatalogoEntity {
     @OneToMany(mappedBy = "modeloColor", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<VarianteCatalogoEntity> variantes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "modeloColor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ModeloColorFotoCatalogoEntity> fotos = new ArrayList<>();
 }

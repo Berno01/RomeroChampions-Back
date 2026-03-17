@@ -2,9 +2,11 @@ package com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.p
 
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.Modelo;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.ModeloColor;
+import com.sistemasTarija.romeroChampions.catalogo.domain.model.ModeloColorFoto;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.Variante;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.ModeloCatalogoEntity;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.ModeloColorCatalogoEntity;
+import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.ModeloColorFotoCatalogoEntity;
 import com.sistemasTarija.romeroChampions.catalogo.infrastructure.adapter.out.persistence.entity.VarianteCatalogoEntity;
 import org.mapstruct.*;
 
@@ -26,6 +28,10 @@ public interface ModeloPersistenceMapper {
     @Mapping(target = "modelo", ignore = true)
     ModeloColorCatalogoEntity toEntity(ModeloColor modeloColor);
 
+    @Mapping(target = "modeloColor", ignore = true)
+    @Mapping(target = "estado", constant = "true")
+    ModeloColorFotoCatalogoEntity toEntity(ModeloColorFoto foto);
+
     @Mapping(target = "idTalla", source = "idTalla")
     @Mapping(target = "talla", ignore = true)
     @Mapping(target = "modeloColor", ignore = true)
@@ -45,6 +51,8 @@ public interface ModeloPersistenceMapper {
     @Mapping(target = "idColor", source = "idColor")
     @Mapping(target = "color", source = "color")
     ModeloColor toDomain(ModeloColorCatalogoEntity entity);
+
+    ModeloColorFoto toDomain(ModeloColorFotoCatalogoEntity entity);
 
     @Mapping(target = "idTalla", source = "idTalla")
     @Mapping(target = "talla", source = "talla")
@@ -83,6 +91,10 @@ public interface ModeloPersistenceMapper {
     default void linkVariante(@MappingTarget ModeloColorCatalogoEntity modeloColorEntity) {
         if (modeloColorEntity.getVariantes() != null) {
             modeloColorEntity.getVariantes().forEach(variante -> variante.setModeloColor(modeloColorEntity));
+        }
+
+        if (modeloColorEntity.getFotos() != null) {
+            modeloColorEntity.getFotos().forEach(foto -> foto.setModeloColor(modeloColorEntity));
         }
     }
 }

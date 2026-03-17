@@ -5,12 +5,15 @@ import com.sistemasTarija.romeroChampions.catalogo.application.dto.ModeloListado
 import com.sistemasTarija.romeroChampions.catalogo.application.dto.RegistrarModeloRequest;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.Modelo;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.ModeloColor;
+import com.sistemasTarija.romeroChampions.catalogo.domain.model.ModeloColorFoto;
 import com.sistemasTarija.romeroChampions.catalogo.domain.model.Variante;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,6 +35,7 @@ public class ModeloMapper {
         return Modelo.builder()
                 .nombre(request.getNombreModelo())
                 .precio(request.getPrecio())
+                .costoActual(request.getCostoActual())
                 .idMarca(request.getIdMarca())
                 .idCategoria(request.getIdCategoria())
                 .idEstilo(request.getIdEstilo())
@@ -42,11 +46,43 @@ public class ModeloMapper {
 
     private ModeloColor toModeloColorDomain(RegistrarModeloRequest.ColorRequest request) {
         if (request == null) return null;
+
+        List<ModeloColorFoto> fotos = buildFotosDomain(request);
+
         return ModeloColor.builder()
                 .idColor(request.getIdColor())
                 .codigo(request.getCodigo())
                 .fotoUrl(request.getFotoUrl())
+                .fotos(fotos)
                 .build();
+    }
+
+    private List<ModeloColorFoto> buildFotosDomain(RegistrarModeloRequest.ColorRequest request) {
+        LinkedHashSet<String> urls = new LinkedHashSet<>();
+
+        if (request.getFotoUrl() != null && !request.getFotoUrl().isBlank()) {
+            urls.add(request.getFotoUrl());
+        }
+
+        if (request.getFotos() != null) {
+            request.getFotos().stream()
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .filter(url -> !url.isBlank())
+                    .forEach(urls::add);
+        }
+
+        List<ModeloColorFoto> fotos = new ArrayList<>();
+        int orden = 1;
+        for (String url : urls) {
+            fotos.add(ModeloColorFoto.builder()
+                    .fotoUrl(url)
+                    .orden(orden)
+                    .esPrincipal(orden == 1)
+                    .build());
+            orden++;
+        }
+        return fotos;
     }
 
     public ModeloListadoDTO toListadoDTO(Modelo modelo) {
@@ -63,6 +99,7 @@ public class ModeloMapper {
                 .id(modelo.getId())
                 .nombre(modelo.getNombre())
                 .precio(modelo.getPrecio())
+                .costoActual(modelo.getCostoActual())
                 .marca(catalogoMapper.toMarcaDTO(modelo.getMarca()))
                 .categoria(catalogoMapper.toCategoriaDTO(modelo.getCategoria()))
                 .estilo(catalogoMapper.toEstiloDTO(modelo.getEstilo()))
@@ -77,6 +114,7 @@ public class ModeloMapper {
                 .id(modeloColor.getId())
                 .codigo(modeloColor.getCodigo())
                 .fotoUrl(modeloColor.getFotoUrl())
+                .fotos(toFotoUrlList(modeloColor.getFotos()))
                 .color(catalogoMapper.toColorDTO(modeloColor.getColor()))
                 .build();
     }
@@ -96,6 +134,7 @@ public class ModeloMapper {
                 .id(modelo.getId())
                 .nombre(modelo.getNombre())
                 .precio(modelo.getPrecio())
+                .costoActual(modelo.getCostoActual())
                 .marca(catalogoMapper.toMarcaDTO(modelo.getMarca()))
                 .categoria(catalogoMapper.toCategoriaDTO(modelo.getCategoria()))
                 .estilo(catalogoMapper.toEstiloDTO(modelo.getEstilo()))
@@ -118,9 +157,22 @@ public class ModeloMapper {
                 .id(modeloColor.getId())
                 .codigo(modeloColor.getCodigo())
                 .fotoUrl(modeloColor.getFotoUrl())
+                .fotos(toFotoUrlList(modeloColor.getFotos()))
                 .color(catalogoMapper.toColorDTO(modeloColor.getColor()))
                 .variantes(variantesDTO)
                 .build();
+    }
+
+    private List<String> toFotoUrlList(List<ModeloColorFoto> fotos) {
+        if (fotos == null) {
+            return new ArrayList<>();
+        }
+        return fotos.stream()
+                .filter(Objects::nonNull)
+                .map(ModeloColorFoto::getFotoUrl)
+                .filter(Objects::nonNull)
+                .filter(url -> !url.isBlank())
+                .collect(Collectors.toList());
     }
 
     private ModeloDTO.VarianteDTO toVarianteDTO(Variante variante) {

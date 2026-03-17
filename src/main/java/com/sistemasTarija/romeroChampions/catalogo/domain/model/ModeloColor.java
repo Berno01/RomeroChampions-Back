@@ -17,6 +17,9 @@ public class ModeloColor {
     private String fotoUrl;
     private Integer idColor;
     private Color color;
+
+    @Builder.Default
+    private List<ModeloColorFoto> fotos = new ArrayList<>();
     
     @Builder.Default
     private List<Variante> variantes = new ArrayList<>();

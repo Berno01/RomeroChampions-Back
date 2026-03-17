@@ -20,8 +20,14 @@ public class DetalleVentaDTO {
     private Integer cantidad;
     @JsonProperty("precio_unitario")
     private Double precioUnitario;
+    @JsonProperty("costo_unitario")
+    private Double costoUnitario;
+    @JsonProperty("ganancia_unitaria")
+    private Double gananciaUnitaria;
     @JsonProperty("total")
     private Double total;
+    @JsonProperty("ganancia_total")
+    private Double gananciaTotal;
 
 
     public DetalleVentaDTO() {}

@@ -15,6 +15,9 @@ public class ModeloEntity {
     @Column(name = "precio")
     private Double precio;
 
+    @Column(name = "costo_actual")
+    private Double costoActual;
+
     @ManyToOne @JoinColumn(name = "id_marca")
     private MarcaEntity marca;
 

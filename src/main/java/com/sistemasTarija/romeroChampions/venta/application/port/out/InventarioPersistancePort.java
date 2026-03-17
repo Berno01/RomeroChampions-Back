@@ -10,6 +10,7 @@ public interface InventarioPersistancePort {
     Inventario save(Inventario idInventario);
     List<Inventario> findAll();
     Optional<Inventario> findByIdVarianteAndIdSucursal(Integer idVariante, Integer idSucursal);
+    Optional<Double> findCostoActualByIdVariante(Integer idVariante);
 
 
 

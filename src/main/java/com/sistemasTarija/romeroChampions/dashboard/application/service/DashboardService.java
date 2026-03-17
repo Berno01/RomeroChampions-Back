@@ -29,10 +29,12 @@ public class DashboardService {
         
         Double totalVentas = row[0] != null ? ((Number) row[0]).doubleValue() : 0.0;
         Long cantidadVentas = row[1] != null ? ((Number) row[1]).longValue() : 0L;
-        Double ticketPromedio = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
-        Long unidadesVendidas = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+        Double gananciaDevengada = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+        Double gananciaCobrada = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
+        Double gananciaPendiente = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+        Long unidadesVendidas = row[5] != null ? ((Number) row[5]).longValue() : 0L;
         
-        return new DashboardKPIsDTO(totalVentas, cantidadVentas, ticketPromedio, unidadesVendidas);
+        return new DashboardKPIsDTO(totalVentas, cantidadVentas, gananciaDevengada, gananciaCobrada, gananciaPendiente, unidadesVendidas);
     }
 
     /**

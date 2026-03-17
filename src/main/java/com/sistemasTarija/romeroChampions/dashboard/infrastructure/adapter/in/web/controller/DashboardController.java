@@ -19,7 +19,8 @@ public class DashboardController {
 
     /**
      * GET /api/dashboard/kpis
-     * Retorna: totalVentas, cantidadVentas, ticketPromedio, unidadesVendidas
+        * Retorna: totalVentas, cantidadVentas, gananciaDevengada, gananciaCobrada,
+        *          gananciaPendiente, unidadesVendidas
      */
     @GetMapping("/kpis")
     public ResponseEntity<DashboardKPIsDTO> obtenerKPIs(

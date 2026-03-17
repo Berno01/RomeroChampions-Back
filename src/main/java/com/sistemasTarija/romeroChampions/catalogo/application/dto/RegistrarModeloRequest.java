@@ -17,6 +17,8 @@ public class RegistrarModeloRequest {
     private String nombreModelo;
     @JsonProperty("precio")
     private Double precio;
+    @JsonProperty("costoActual")
+    private Double costoActual;
     @JsonProperty("idMarca")
     private Integer idMarca;
     @JsonProperty("idCategoria")
@@ -42,5 +44,7 @@ public class RegistrarModeloRequest {
         private String codigo;
         @JsonProperty("fotoUrl")
         private String fotoUrl;
+        @JsonProperty("fotos")
+        private List<String> fotos;
     }
 }

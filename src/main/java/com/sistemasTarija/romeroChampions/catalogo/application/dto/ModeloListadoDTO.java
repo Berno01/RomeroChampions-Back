@@ -17,6 +17,7 @@ public class ModeloListadoDTO {
     private Integer id;
     private String nombre;
     private Double precio;
+    private Double costoActual;
     private OptionDTO marca;
     private OptionDTO categoria;
     private OptionDTO estilo;
@@ -31,6 +32,7 @@ public class ModeloListadoDTO {
         private Integer id;
         private String codigo;
         private String fotoUrl;
+        private List<String> fotos;
         private ColorDTO color;
     }
 }

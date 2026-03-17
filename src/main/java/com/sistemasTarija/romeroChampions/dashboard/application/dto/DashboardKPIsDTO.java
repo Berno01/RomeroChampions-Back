@@ -12,6 +12,8 @@ import lombok.Setter;
 public class DashboardKPIsDTO {
     private Double totalVentas;
     private Long cantidadVentas;
-    private Double ticketPromedio;
+    private Double gananciaDevengada;
+    private Double gananciaCobrada;
+    private Double gananciaPendiente;
     private Long unidadesVendidas;
 }

@@ -34,11 +34,15 @@ public class VentaMapper {
     }
 
     private DetalleVenta toDetalleVentaDomain(DetalleVentaDTO dto) {
-        return new DetalleVenta(
+        DetalleVenta detalle = new DetalleVenta(
                 dto.getIdVariante(),
                 dto.getCantidad(),
                 dto.getPrecioUnitario()
         );
+        detalle.setCostoUnitario(dto.getCostoUnitario());
+        detalle.setGananciaUnitaria(dto.getGananciaUnitaria());
+        detalle.setGananciaTotal(dto.getGananciaTotal());
+        return detalle;
     }
 
     public VentaDTO toDto(Venta domain) {
@@ -95,6 +99,9 @@ public class VentaMapper {
                 domain.getPrecioUnitario(),
                 domain.getTotal()
         );
+        dto.setCostoUnitario(domain.getCostoUnitario());
+        dto.setGananciaUnitaria(domain.getGananciaUnitaria());
+        dto.setGananciaTotal(domain.getGananciaTotal());
         // Agregar idModelo para respuesta al frontend
         dto.setIdModelo(domain.getIdModelo());
         return dto;

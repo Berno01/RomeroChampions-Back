@@ -35,7 +35,13 @@ public class DetalleVentaEntity {
     private Integer cantidad;
     @Column(name = "precio_unitario")
     private Double precioUnitario;
+    @Column(name = "costo_unitario")
+    private Double costoUnitario;
+    @Column(name = "ganancia_unitaria")
+    private Double gananciaUnitaria;
     @Column(name = "total")
     private Double total;
+    @Column(name = "ganancia_total")
+    private Double gananciaTotal;
 
 }

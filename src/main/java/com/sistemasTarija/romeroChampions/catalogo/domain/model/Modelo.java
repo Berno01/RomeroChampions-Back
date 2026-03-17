@@ -15,6 +15,7 @@ public class Modelo {
     private Integer id;
     private String nombre;
     private Double precio;
+    private Double costoActual;
     
     // Referencias a entidades relacionadas (usando IDs para independencia del dominio)
     private Integer idMarca;

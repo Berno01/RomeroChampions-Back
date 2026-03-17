@@ -64,6 +64,7 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
         for(DetalleVenta detalle : venta.getDetalleVenta()) {
             Integer idVariante = detalle.getIdVariante();
             Integer idSucursal = venta.getIdSucursal();
+            aplicarCostoYGanancia(detalle);
             Optional<Inventario> optionalInventario = inventarioPort.findByIdVarianteAndIdSucursal(idVariante, idSucursal);
             Inventario inventario = optionalInventario.orElseThrow(() ->
                     new InventarioFailedExeption("La prenda con ID variante " + idVariante + " de la sucursal" + idSucursal + " no fue encontrado."));
@@ -163,6 +164,7 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
             Integer idVariante = detalleNuevo.getIdVariante();
             Integer cantidadNueva = detalleNuevo.getCantidad();
             Integer idSucursal = ventaAntigua.getIdSucursal();
+            aplicarCostoYGanancia(detalleNuevo);
 
             Inventario inventario = inventarioPort.findByIdVarianteAndIdSucursal(idVariante, idSucursal)
                     .orElseThrow(() -> new InventarioFailedExeption("Inventario no encontrado para el item ID: " + idVariante));
@@ -329,5 +331,15 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
                         venta.getTotal() // Agregamos total original para contexto
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private void aplicarCostoYGanancia(DetalleVenta detalle) {
+        Double precioUnitario = detalle.getPrecioUnitario() != null ? detalle.getPrecioUnitario() : 0.0;
+        Integer cantidad = detalle.getCantidad() != null ? detalle.getCantidad() : 0;
+        Double costoUnitario = inventarioPort.findCostoActualByIdVariante(detalle.getIdVariante()).orElse(0.0);
+
+        detalle.setCostoUnitario(costoUnitario);
+        detalle.setGananciaUnitaria(precioUnitario - costoUnitario);
+        detalle.setGananciaTotal((precioUnitario - costoUnitario) * cantidad);
     }
 }

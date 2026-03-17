@@ -12,7 +12,10 @@ public class DetalleVenta {
     private Integer idModelo; // Solo para lectura - enviado al frontend
     private Integer cantidad;
     private Double precioUnitario;
+    private Double costoUnitario;
+    private Double gananciaUnitaria;
     private Double total;
+    private Double gananciaTotal;
 
     public DetalleVenta(Integer idVariante, Integer cantidad, Double precioUnitario) {
         this.idVariante = idVariante;
