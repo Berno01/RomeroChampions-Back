@@ -77,6 +77,7 @@ public class ModeloService implements ManageModeloUseCase {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ModeloListadoDTO> findAllModelosListado() {
         // Uses optimized persistence method (avoids variants loading) and optimized mapper (avoids variants serialization)

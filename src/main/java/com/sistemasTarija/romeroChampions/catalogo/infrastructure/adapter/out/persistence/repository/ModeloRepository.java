@@ -17,6 +17,7 @@ public interface ModeloRepository extends JpaRepository<ModeloCatalogoEntity, In
            "LEFT JOIN FETCH m.marca " +
            "LEFT JOIN FETCH m.categoria " +
            "LEFT JOIN FETCH m.estilo " +
+           "LEFT JOIN FETCH m.genero " +
            "WHERE m.estado = true " +
            "ORDER BY m.id DESC")
     List<ModeloCatalogoEntity> findAllWithColores();
