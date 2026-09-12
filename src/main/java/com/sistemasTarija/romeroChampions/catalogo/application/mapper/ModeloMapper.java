@@ -99,7 +99,6 @@ public class ModeloMapper {
                 .id(modelo.getId())
                 .nombre(modelo.getNombre())
                 .precio(modelo.getPrecio())
-                .costoActual(modelo.getCostoActual())
                 .marca(catalogoMapper.toMarcaDTO(modelo.getMarca()))
                 .categoria(catalogoMapper.toCategoriaDTO(modelo.getCategoria()))
                 .estilo(catalogoMapper.toEstiloDTO(modelo.getEstilo()))

@@ -38,10 +38,12 @@ public class ModeloColorCatalogoEntity {
     private ColorCatalogoEntity color;
 
     @OneToMany(mappedBy = "modeloColor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 50)
     @Builder.Default
     private List<VarianteCatalogoEntity> variantes = new ArrayList<>();
 
     @OneToMany(mappedBy = "modeloColor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 50)
     @Builder.Default
     private List<ModeloColorFotoCatalogoEntity> fotos = new ArrayList<>();
 }

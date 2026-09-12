@@ -1,5 +1,6 @@
 package com.sistemasTarija.romeroChampions.catalogo.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sistemasTarija.romeroChampions.catalogo.application.dto.options.ColorDTO;
 import com.sistemasTarija.romeroChampions.catalogo.application.dto.options.OptionDTO;
 import lombok.AllArgsConstructor;
@@ -13,11 +14,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ModeloListadoDTO {
     private Integer id;
     private String nombre;
     private Double precio;
-    private Double costoActual;
     private OptionDTO marca;
     private OptionDTO categoria;
     private OptionDTO estilo;
@@ -28,6 +29,7 @@ public class ModeloListadoDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ModeloColorListadoDTO {
         private Integer id;
         private String codigo;
