@@ -63,6 +63,7 @@ public interface ModeloPersistenceMapper {
     @Mapping(target = "idColor", source = "idColor")
     @Mapping(target = "color", source = "color")
     @Mapping(target = "variantes", ignore = true)
+    @Mapping(target = "fotos", ignore = true)
     ModeloColor toDomainListado(ModeloColorCatalogoEntity entity);
 
     @Mapping(target = "idMarca", source = "idMarca")

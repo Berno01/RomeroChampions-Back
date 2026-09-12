@@ -113,7 +113,6 @@ public class ModeloMapper {
                 .id(modeloColor.getId())
                 .codigo(modeloColor.getCodigo())
                 .fotoUrl(modeloColor.getFotoUrl())
-                .fotos(toFotoUrlList(modeloColor.getFotos()))
                 .color(catalogoMapper.toColorDTO(modeloColor.getColor()))
                 .build();
     }

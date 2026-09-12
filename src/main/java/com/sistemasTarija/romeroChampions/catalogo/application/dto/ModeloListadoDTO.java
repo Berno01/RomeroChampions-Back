@@ -34,7 +34,6 @@ public class ModeloListadoDTO {
         private Integer id;
         private String codigo;
         private String fotoUrl;
-        private List<String> fotos;
         private ColorDTO color;
     }
 }
